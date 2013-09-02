@@ -34,7 +34,7 @@
 
 #import <Social/Social.h>
 
-static BOOL waitingForAccess = NO;
+//static BOOL waitingForAccess = NO;
 
 
 @interface DEFacebookComposeViewController ()
@@ -578,11 +578,11 @@ enum {
     
     self.gradientView.frame = self.gradientView.superview.bounds;
     
-    [FBSession openActiveSessionWithAllowLoginUI:NO];
+    /*[FBSession openActiveSessionWithAllowLoginUI:NO];
     
     if (![FBSession.activeSession isOpen]) {
         [self setSendButtonTitle:NSLocalizedString(@"Log in",@"")];
-    }
+    }*/
     [self.navImage setNeedsDisplay];
 }
 
@@ -720,22 +720,42 @@ enum {
     [newConnection addRequest:request completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
         if (error)
         {
-//            NSLog(@"    error");
+            [FBSession.activeSession requestNewPublishPermissions:[NSArray arrayWithObject:@"publish_actions"]
+                                                  defaultAudience:FBSessionDefaultAudienceEveryone
+                                                completionHandler:^(FBSession *session, NSError *permissionError) {
+                                                    if (!permissionError) {
+                                                        // Now have the permission
+                                                        [self send];
+                                                    } else {
+                                                        // Facebook SDK * error handling *
+                                                        
+                                                        //            NSLog(@"    error");
+                                                        
+                                                        // remove activity
+                                                        [[[self.sendButton subviews] lastObject] removeFromSuperview];
+                                                        [self setSendButtonTitle:NSLocalizedString(@"Post",@"")];
+                                                        self.view.userInteractionEnabled = YES;
+                                                        
+                                                        // if the operation is not user cancelled
+                                                        if (permissionError.fberrorCategory != FBErrorCategoryUserCancelled) {
+                                                            UIAlertView *alertView = [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Cannot Send Message", @"")
+                                                                                                                 message:[NSString stringWithFormat:NSLocalizedString(@"The message, \"%@\" cannot be sent because the connection to Facebook failed.", @""), self.textView.text]
+                                                                                                                delegate:self
+                                                                                                       cancelButtonTitle:NSLocalizedString(@"Cancel", @"")
+                                                                                                       otherButtonTitles:NSLocalizedString(@"Try Again", @""), nil] autorelease];
+                                                            alertView.tag = DEFacebookComposeViewControllerCannotSendAlert;
+                                                            [alertView show];
+                                                        }
+                                                    }
+                                                    
+                                                    self.sendButton.enabled = YES;
+                                                }];
             
-            // remove activity
-            [[[self.sendButton subviews] lastObject] removeFromSuperview];
-            [self setSendButtonTitle:NSLocalizedString(@"Post",@"")];
-            self.view.userInteractionEnabled = YES;
+
             
-            UIAlertView *alertView = [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Cannot Send Message", @"")
-                                                                 message:[NSString stringWithFormat:NSLocalizedString(@"The message, \"%@\" cannot be sent because the connection to Facebook failed.", @""), self.textView.text]
-                                                                delegate:self
-                                                       cancelButtonTitle:NSLocalizedString(@"Cancel", @"")
-                                                       otherButtonTitles:NSLocalizedString(@"Try Again", @""), nil] autorelease];
-            alertView.tag = DEFacebookComposeViewControllerCannotSendAlert;
-            [alertView show];
+           
             
-            self.sendButton.enabled = YES;
+            
             
             
         }
