@@ -1,6 +1,3 @@
-#error Use your Twitter keys from developer.twitter.com
 
-#define kDEConsumerKey @"KsFRBUtlQv5G8X8OYLC8cg"
-#define kDEConsumerSecret @"KBQhDWw6hsL178TmcgmrvZk4SK2mni7o1HbG4Om9TM"
-
-#error Use your Facebook app id from developer.facebook.com, add to plist file
+#define kDEConsumerKey @"b1X8a7FI04gff7tcCVAjjg"
+#define kDEConsumerSecret @"T3tVO2Zyi0maFNfadpLXeqpYpg5fMuvm6bPbGixm0"
