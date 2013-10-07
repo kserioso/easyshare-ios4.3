@@ -128,10 +128,12 @@ enum {
 
 - (id)initForceUseCustomController:(BOOL)custom urlSchemeSuffix:(NSString *)urlSchemeSuffix
 {
+#if 0
     if (!custom && [[UIDevice currentDevice].systemVersion floatValue] >= 6) {
         self = [(DEFacebookComposeViewController*)[SLComposeViewController composeViewControllerForServiceType:SLServiceTypeFacebook] retain];
         return self;
     }
+#endif
     
     self = [super init];
     if (self) {
